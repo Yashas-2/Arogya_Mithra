@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Report Analysis - ArogyaMitra AI{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--gradient-dark);">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="margin-bottom: 1rem;">
+                <span class="gradient-text">AI Medical Report</span> Interpreter
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--gray-300);">
+                Understand your reports in simple language with AI-powered analysis
+            </p>
+        </div>
+
+        <div style="max-width: 900px; margin: 0 auto;">
+            <!-- Select Report -->
+            <div class="glass-card" id="selectCard">
+                <h3 style="margin-bottom: 2rem;">
+                    <i class="fas fa-file-medical"></i> Select Report to Analyze
+                </h3>
+
+                <div id="reportsList" style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+                    <!-- Reports will be loaded here -->
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-language"></i> Language for Explanation
+                    </label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <label class="radio-card">
+                            <input type="radio" name="analysis_language" value="English" checked>
+                            <div class="radio-card-content">
+                                <span>English</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="analysis_language" value="Kannada">
+                            <div class="radio-card-content">
+                                <span>ಕನ್ನಡ (Kannada)</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button id="analyzeBtn" class="btn btn-glow" style="width: 100%; padding: 1.25rem; margin-top: 1rem;" disabled>
+                    <i class="fas fa-brain"></i> Analyze with AI
+                </button>
+            </div>
+
+            <!-- Analysis Results -->
+            <div id="analysisResults" style="display: none;">
+                <!-- Risk Level Card -->
+                <div class="glass-card" style="margin-bottom: 2rem;">
+                    <div style="text-align: center;">
+                        <div id="riskIcon" style="width: 100px; height: 100px; margin: 0 auto 1rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem;"></div>
+                        <h2 id="riskLevel" style="margin-bottom: 0.5rem;">Risk Level</h2>
+                        <p id="patientSummary" style="color: var(--gray-300); line-height: 1.8; max-width: 700px; margin: 0 auto;"></p>
+                    </div>
+                </div>
+
+                <!-- Abnormal Findings -->
+                <div class="glass-card" style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 2rem;">
+                        <i class="fas fa-exclamation-triangle"></i> Test Results & Findings
+                    </h3>
+                    <div id="findingsList"></div>
+                </div>
+
+                <!-- Lifestyle Recommendations -->
+                <div class="glass-card" style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 2rem;">
+                        <i class="fas fa-heartbeat"></i> Lifestyle Recommendations
+                    </h3>
+                    <div id="recommendationsList"></div>
+                </div>
+
+                <!-- Doctor Visit -->
+                <div class="glass-card" style="border-left: 4px solid var(--info-blue);">
+                    <h3 style="margin-bottom: 1rem;">
+                        <i class="fas fa-user-md"></i> Doctor Consultation
+                    </h3>
+                    <p id="doctorSuggestion" style="color: var(--gray-300); line-height: 1.8;"></p>
+                </div>
+
+                <button onclick="location.reload()" class="btn btn-primary" style="width: 100%; margin-top: 2rem;">
+                    <i class="fas fa-redo"></i> Analyze Another Report
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingAnalysis" style="display: none;">
+                <div class="glass-card" style="text-align: center; padding: 3rem;">
+                    <div style="width: 100px; height: 100px; border: 4px solid rgba(16, 185, 129, 0.2); border-top-color: var(--primary-emerald); border-radius: 50%; margin: 0 auto 2rem; animation: spin 1s linear infinite;"></div>
+                    <h3 style="margin-bottom: 1rem;">AI is analyzing your report...</h3>
+                    <p style="color: var(--gray-300);">This should take less than 5 seconds</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-select-card {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.report-select-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-emerald);
+}
+
+.report-select-card.selected {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: var(--primary-emerald);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.finding-card {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.severity-badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.severity-mild { background: rgba(34, 197, 94, 0.2); color: var(--success-green); }
+.severity-moderate { background: rgba(234, 179, 8, 0.2); color: var(--warning-yellow); }
+.severity-severe { background: rgba(239, 68, 68, 0.2); color: var(--danger-red); }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedReportId = null;
+
+// Load reports on page load
+async function loadReports() {
+    try {
+        const response = await fetch('/api/reports/');
+        const result = await response.json();
+        
+        if (result.success && result.data.length > 0) {
+            displayReportsList(result.data);
+            
+            // Check if report was selected from vault page
+            const preSelectedId = localStorage.getItem('reportToAnalyze');
+            if (preSelectedId) {
+                selectReport(parseInt(preSelectedId));
+                localStorage.removeItem('reportToAnalyze');
+            }
+        } else {
+            document.getElementById('reportsList').innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-inbox" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--gray-300);">No reports uploaded yet. <a href="/report-vault/" style="color: var(--primary-emerald);">Upload reports</a> first.</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading reports:', error);
+    }
+}
+
+function displayReportsList(reports) {
+    const list = document.getElementById('reportsList');
+    list.innerHTML = reports.map(report => `
+        <div class="report-select-card" onclick="selectReport(${report.id})" data-report-id="${report.id}">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <i class="fas fa-file-pdf" style="font-size: 2rem; color: var(--danger-red);"></i>
+                <div style="flex: 1;">
+                    <h4 style="margin-bottom: 0.25rem;">${report.title}</h4>
+                    <p style="font-size: 0.875rem; color: var(--gray-300);">${report.scan_type} • ${new Date(report.uploaded_date).toLocaleDateString()}</p>
+                </div>
+                <i class="fas fa-check-circle" style="font-size: 1.5rem; color: var(--primary-emerald); display: none;"></i>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectReport(reportId) {
+    selectedReportId = reportId;
+    
+    // Update UI
+    document.querySelectorAll('.report-select-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.fa-check-circle').style.display = 'none';
+    });
+    
+    const selectedCard = document.querySelector(`[data-report-id="${reportId}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+        selectedCard.querySelector('.fa-check-circle').style.display = 'block';
+    }
+    
+    document.getElementById('analyzeBtn').disabled = false;
+}
+
+// Analyze button click
+document.getElementById('analyzeBtn').addEventListener('click', async function() {
+    if (!selectedReportId) return;
+    
+    const language = document.querySelector('input[name="analysis_language"]:checked').value;
+    
+    // Show loading
+    document.getElementById('selectCard').style.display = 'none';
+    document.getElementById('loadingAnalysis').style.display = 'block';
+    
+    try {
+        const response = await fetch('/api/analyze-report/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                report_id: selectedReportId,
+                language: language
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            displayAnalysisResults(result.data);
+        } else {
+            if (result.upgrade_required) {
+                if (confirm(result.error + '\n\nUpgrade to Premium now?')) {
+                    window.location.href = '/premium/';
+                }
+            } else if (result.sample) {
+                // Show sample results with appropriate message
+                alert('Analysis took longer than expected. Showing sample results.');
+                displayAnalysisResults(getSampleAnalysisData(language));
+            } else {
+                alert('Error: ' + result.error);
+                location.reload();
+            }
+        }
+    } catch (error) {
+        alert('Error analyzing report. Please try again.');
+        location.reload();
+    }
+});
+
+function displayAnalysisResults(data) {
+    // Hide loading
+    document.getElementById('loadingAnalysis').style.display = 'none';
+    
+    // Show results
+    const resultsDiv = document.getElementById('analysisResults');
+    resultsDiv.style.display = 'block';
+    resultsDiv.style.animation = 'fade-in-up 0.6s ease-out';
+    
+    // Risk Level
+    const riskColors = {
+        'Low': { bg: 'rgba(34, 197, 94, 0.2)', color: 'var(--success-green)', icon: 'fa-check-circle' },
+        'Medium': { bg: 'rgba(234, 179, 8, 0.2)', color: 'var(--warning-yellow)', icon: 'fa-exclamation-triangle' },
+        'High': { bg: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger-red)', icon: 'fa-times-circle' }
+    };
+    
+    const riskStyle = riskColors[data.risk_level] || riskColors['Medium'];
+    document.getElementById('riskIcon').style.background = riskStyle.bg;
+    document.getElementById('riskIcon').style.color = riskStyle.color;
+    document.getElementById('riskIcon').innerHTML = `<i class="fas ${riskStyle.icon}"></i>`;
+    document.getElementById('riskLevel').textContent = data.risk_level + ' Risk';
+    document.getElementById('riskLevel').style.color = riskStyle.color;
+    document.getElementById('patientSummary').textContent = data.patient_summary;
+    
+    // Abnormal Findings
+    const findingsList = document.getElementById('findingsList');
+    findingsList.innerHTML = data.abnormal_findings.map(finding => `
+        <div class="finding-card">
+            <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
+                <h4 style="flex: 1;">${finding.parameter}</h4>
+                <span class="severity-badge severity-${finding.severity}">${finding.severity}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <p style="font-size: 0.875rem; color: var(--gray-300);">Your Value</p>
+                    <p style="font-weight: 600; font-size: 1.125rem;">${finding.value}</p>
+                </div>
+                <div>
+                    <p style="font-size: 0.875rem; color: var(--gray-300);">Normal Range</p>
+                    <p style="font-weight: 600; font-size: 1.125rem; color: var(--success-green);">${finding.normal_range}</p>
+                </div>
+            </div>
+            <p style="color: var(--gray-300); line-height: 1.8;">
+                <i class="fas fa-info-circle" style="color: var(--info-blue);"></i> ${finding.simple_explanation}
+            </p>
+        </div>
+    `).join('');
+    
+    // Recommendations
+    const recommendationsList = document.getElementById('recommendationsList');
+    recommendationsList.innerHTML = data.lifestyle_recommendations.map((rec, index) => `
+        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.05); border-left: 3px solid var(--primary-emerald); border-radius: 8px; margin-bottom: 0.75rem;">
+            <strong style="color: var(--primary-emerald);">${index + 1}.</strong> ${rec}
+        </div>
+    `).join('');
+    
+    // Doctor Suggestion
+    document.getElementById('doctorSuggestion').textContent = data.doctor_visit_suggestion;
+}
+
+// Add this helper function at the end of the script block
+function getSampleAnalysisData(language) {
+    return {
+        "patient_summary": language === 'English' ? 
+            "This is a sample analysis. Actual analysis provides detailed insights." : 
+            "ಇದು ಒಂದು ಉದಾಹರಣೆ ವಿಶ್ಲೇಷಣೆ. ವಾಸ್ತವಿಕ ವಿಶ್ಲೇಷಣೆಯು ವಿಸ್ತೃತ ಮಾಹಿತಿಯನ್ನು ಒದಗಿಸುತ್ತದೆ.",
+        "abnormal_findings": [
+            {
+                "parameter": language === 'English' ? "Hemoglobin" : "ಹೀಮೋಗ್ಲೋಬಿನ್",
+                "value": "10.2 g/dL",
+                "normal_range": "12-16 g/dL",
+                "severity": "moderate",
+                "simple_explanation": language === 'English' ? 
+                    "Slightly low. Eat iron-rich foods." : 
+                    "ಸ್ವಲ್ಪ ಕಡಿಮೆ. ಇನುಮಡ ಆಹಾರಗಳು ತಿನ್ನಿರಿ."
+            }
+        ],
+        "risk_level": "Medium",
+        "lifestyle_recommendations": language === 'English' ? [
+            "Eat green vegetables and fruits daily",
+            "Exercise for 30 minutes daily"
+        ] : [
+            "ಹಸಿರು ತರಕಾರಿಗಳು ಮತ್ತು ಹಣ್ಣುಗಳು ತಿನ್ನಿರಿ",
+            "ದಿನಕ್ಕೆ 30 ನಿಮಿಷಗಳ ವ್ಯಾಯಾಮ ಮಾಡಿರಿ"
+        ],
+        "doctor_visit_suggestion": language === 'English' ? 
+            "Consult doctor within 2 weeks" : 
+            "2 ವಾರದಲ್ಲಿ ಡಾಕ್ಟರ್ ಅನ್ನು ಭೇಟಿ ಮಾಡಿ",
+        "language": language
+    };
+}
+
+// Initialize
+loadReports();
+</script>
+{% endblock %}

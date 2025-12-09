@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ArogyaMitra AI - Government Hospital Healthcare Intelligence for Karnataka">
+    <title>Hospital Dashboard - ArogyaMitra AI</title>
+    
+    <!-- CSRF Token -->
+    {% if csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% endif %}
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+    <style>
+        .dashboard-header {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-info h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-info p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .logout-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 12px;
+            color: #f87171;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--emerald);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .file-upload {
+            position: relative;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .file-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+
+        .upload-btn {
+            padding: 1.2rem 2rem;
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .clear-btn {
+            padding: 1.2rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--emerald);
+            font-weight: 600;
+        }
+
+        .history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--emerald);
+        }
+
+        .badge-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideInDown 0.3s ease;
+        }
+
+        .alert.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--emerald);
+        }
+
+        .alert.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        /* Custom scan type input */
+        .custom-scan-type {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .custom-disease-type {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .upload-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .upload-info {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="header-info">
+            <h1><i class="fas fa-hospital"></i> Hospital Staff Dashboard</h1>
+            <p id="staffInfo">Loading...</p>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="alert success" id="successAlert"></div>
+        <div class="alert error" id="errorAlert"></div>
+
+        <div class="upload-section">
+            <h2 class="section-title">
+                <i class="fas fa-cloud-upload-alt"></i>
+                Upload Patient Report
+            </h2>
+            
+            <form id="uploadForm" class="upload-form">
+                <div class="form-group">
+                    <label>Patient Phone Number *</label>
+                    <input type="text" id="patientPhone" class="form-input" placeholder="+91XXXXXXXXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Aadhaar Last 4 Digits (Optional)</label>
+                    <input type="text" id="aadhaarLast4" class="form-input" placeholder="XXXX" maxlength="4">
+                </div>
+
+                <div class="form-group">
+                    <label>Report Title *</label>
+                    <input type="text" id="reportTitle" class="form-input" placeholder="Blood Test - Nov 2025" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Scan Type *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-file-medical"></i>
+                        <select id="scanType" class="form-select" required>
+                            <option value="">Select Type</option>
+                            <option value="Blood">Blood Test</option>
+                            <option value="MRI">MRI Scan</option>
+                            <option value="CT">CT Scan</option>
+                            <option value="Xray">X-Ray</option>
+                            <option value="Ultrasound">Ultrasound</option>
+                            <option value="ECG">ECG</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div class="custom-scan-type" id="customScanTypeContainer">
+                        <input type="text" id="customScanType" class="form-input" placeholder="Enter scan type">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Hospital Name</label>
+                    <input type="text" id="hospitalName" class="form-input" placeholder="Auto-filled from profile">
+                </div>
+
+                <div class="form-group">
+                    <label>Test Date</label>
+                    <input type="date" id="testDate" class="form-input">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Upload Report PDF *</label>
+                    <div class="file-upload">
+                        <input type="file" id="reportFile" accept=".pdf" required>
+                        <i class="fas fa-file-pdf" style="font-size: 3rem; color: var(--emerald); margin-bottom: 1rem;"></i>
+                        <p style="color: rgba(255,255,255,0.7);" id="fileName">Click to select PDF file</p>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <button type="submit" class="upload-btn">
+                        <i class="fas fa-shield-alt"></i> Encrypt & Upload Report
+                    </button>
+                    <button type="button" class="clear-btn" onclick="clearFormFields()">
+                        <i class="fas fa-eraser"></i> Clear All Fields
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="upload-section">
+            <h2 class="section-title">
+                <i class="fas fa-history"></i>
+                Upload History
+            </h2>
+            
+            <table class="history-table" id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Report Title</th>
+                        <th>Type</th>
+                        <th>Upload Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: rgba(255,255,255,0.5);">
+                            Loading...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Check if hospital staff is logged in
+        const userRole = localStorage.getItem('userRole');
+        if (userRole !== 'HOSPITAL_STAFF') {
+            window.location.href = '/login/';
+        }
+
+        document.getElementById('staffInfo').textContent = `Welcome, ${localStorage.getItem('userName') || 'Staff'}`;
+        
+        // Pre-fill hospital name field
+        const hospitalName = localStorage.getItem('hospitalName');
+        if (hospitalName) {
+            document.getElementById('hospitalName').value = hospitalName;
+        }
+
+        // File upload preview
+        document.getElementById('reportFile').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || 'Click to select PDF file';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
+        // Handle scan type selection
+        document.getElementById('scanType').addEventListener('change', function() {
+            const customScanTypeContainer = document.getElementById('customScanTypeContainer');
+            const customScanTypeInput = document.getElementById('customScanType');
+            
+            if (this.value === 'Others') {
+                customScanTypeContainer.style.display = 'block';
+                customScanTypeInput.required = true;
+            } else {
+                customScanTypeContainer.style.display = 'none';
+                customScanTypeInput.required = false;
+                customScanTypeInput.value = '';
+            }
+        });
+
+        // Upload form
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Debug CSRF token
+            console.log('Document cookies:', document.cookie);
+            console.log('Meta CSRF token:', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
+            
+            const scanTypeSelect = document.getElementById('scanType');
+            const customScanTypeInput = document.getElementById('customScanType');
+            
+            // If "Others" is selected, use the custom value
+            let scanTypeValue = scanTypeSelect.value;
+            if (scanTypeValue === 'Others') {
+                scanTypeValue = customScanTypeInput.value.trim() || 'Other';
+            }
+            
+            const formData = new FormData();
+            formData.append('patient_phone', document.getElementById('patientPhone').value);
+            formData.append('patient_aadhaar_last4', document.getElementById('aadhaarLast4').value);
+            formData.append('title', document.getElementById('reportTitle').value);
+            formData.append('scan_type', scanTypeValue);
+            formData.append('hospital_name', document.getElementById('hospitalName').value);
+            
+            // Only add test_date if it's not empty
+            const testDateValue = document.getElementById('testDate').value;
+            if (testDateValue) {
+                formData.append('test_date', testDateValue);
+            }
+            
+            formData.append('report_file', document.getElementById('reportFile').files[0]);
+            
+            // Debug form data
+            console.log('Form Data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            
+            // Get CSRF token
+            const csrftoken = getCSRFToken();
+            console.log('CSRF Token found:', csrftoken);
+            
+            if (!csrftoken) {
+                showError('CSRF token not found. Please refresh the page and try again.');
+                return;
+            }
+            
+            console.log('CSRF Token:', csrftoken);
+            
+            try {
+                const response = await fetch('/api/hospital/upload-report/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    showSuccess(`Report uploaded successfully for patient ${data.data.patient_name}!`);
+                    // Reset the form
+                    document.getElementById('uploadForm').reset();
+                    // Reset custom fields specifically
+                    document.getElementById('fileName').textContent = 'Click to select PDF file';
+                    document.getElementById('customScanTypeContainer').style.display = 'none';
+                    document.getElementById('customScanType').required = false;
+                    document.getElementById('customScanType').value = '';
+                    loadHistory();
+                    
+                    // Show additional information about the upload
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'upload-info';
+                    infoDiv.innerHTML = `
+                        <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--primary-emerald); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-emerald);">
+                                <i class="fas fa-check-circle"></i> Report Assigned Successfully
+                            </h4>
+                            <p style="margin: 0; color: rgba(255,255,255,0.8);">
+                                Report "${data.data.title}" has been encrypted and securely assigned to patient ${data.data.patient_name} (${data.data.patient_phone}).
+                                <br><strong>This report is accessible only by this specific patient.</strong>
+                                <br>The patient can view this report in their vault after OTP verification.
+                            </p>
+                        </div>
+                    `;
+                    
+                    // Insert after the form
+                    const form = document.getElementById('uploadForm');
+                    form.parentNode.insertBefore(infoDiv, form.nextSibling);
+                    
+                    // Auto-remove the info after 10 seconds
+                    setTimeout(() => {
+                        if (infoDiv.parentNode) {
+                            infoDiv.parentNode.removeChild(infoDiv);
+                        }
+                    }, 10000);
+                } else {
+                    showError(data.error || 'Upload failed');
+                }
+            } catch (error) {
+                showError('Upload failed. Please try again.');
+                console.error('Upload error:', error);
+            }
+        });
+
+        // Load upload history
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/hospital/upload-history/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('historyBody');
+                    if (data.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: rgba(255,255,255,0.5);">No uploads yet</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = data.data.map(report => `
+                        <tr>
+                            <td>${report.patient_name}</td>
+                            <td>${report.title}</td>
+                            <td>${report.scan_type}</td>
+                            <td>${new Date(report.uploaded_date).toLocaleDateString()}</td>
+                            <td>
+                                <span class="badge ${report.is_analyzed ? 'badge-success' : 'badge-pending'}">
+                                    ${report.is_analyzed ? 'Analyzed' : 'Pending'}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                    
+                    // Add a note to remind staff that patients need to verify via OTP
+                    const noteRow = document.createElement('tr');
+                    noteRow.innerHTML = `
+                        <td colspan="5" style="text-align: center; padding: 1rem; background: rgba(16, 185, 129, 0.05); border-top: 2px solid rgba(16, 185, 129, 0.2);">
+                            <small style="color: rgba(255,255,255,0.7);">
+                                <i class="fas fa-info-circle"></i> Note: Patients must verify via OTP to access these reports in their vault
+                            </small>
+                        </td>
+                    `;
+                    tbody.appendChild(noteRow);
+                }
+            } catch (error) {
+                console.error('Failed to load history:', error);
+            }
+        }
+
+        // Function to clear all form fields
+        function clearFormFields() {
+            document.getElementById('uploadForm').reset();
+            document.getElementById('fileName').textContent = 'Click to select PDF file';
+            document.getElementById('customScanTypeContainer').style.display = 'none';
+            document.getElementById('customScanType').required = false;
+            document.getElementById('customScanType').value = '';
+            
+            // Set hospital name back to default from user profile
+            const hospitalName = localStorage.getItem('hospitalName');
+            if (hospitalName) {
+                document.getElementById('hospitalName').value = hospitalName;
+            }
+        }
+
+        function showSuccess(message) {
+            const alert = document.getElementById('successAlert');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+
+        function showError(message) {
+            const alert = document.getElementById('errorAlert');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout/', { method: 'POST' });
+            localStorage.clear();
+            window.location.href = '/login/';
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Fallback function to get CSRF token from meta tag
+        function getCSRFToken() {
+            // First try to get from cookie
+            let csrftoken = getCookie('csrftoken');
+            
+            // If not found in cookie, try to get from meta tag
+            if (!csrftoken) {
+                const csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
+                if (csrfMetaTag) {
+                    csrftoken = csrfMetaTag.getAttribute('content');
+                }
+            }
+            
+            return csrftoken;
+        }
+
+        // Load history on page load
+        loadHistory();
+    </script>
+</body>
+</html>

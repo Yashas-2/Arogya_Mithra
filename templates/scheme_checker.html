@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+
+{% block title %}Scheme Eligibility Checker - ArogyaMitra AI{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--gradient-dark);">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="margin-bottom: 1rem;">
+                <span data-translate="checkYourEligibility">Check Your <span class="gradient-text">Eligibility</span></span>
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--gray-300);" data-translate="aiWillFindBestSchemes">
+                AI will find the best Karnataka & Central Government health schemes for you
+            </p>
+        </div>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            <!-- Input Form -->
+            <div class="glass-card" id="inputCard">
+                <h3 style="margin-bottom: 2rem; text-align: center;">
+                    <i class="fas fa-user-check"></i> <span data-translate="enterYourDetails">Enter Your Details</span>
+                </h3>
+
+                <form id="schemeForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-birthday-cake"></i> <span data-translate="yourAge">Your Age</span>
+                        </label>
+                        <input type="number" class="form-input" id="age" name="age" min="1" max="120" required placeholder="Enter your age"{% if patient_profile %} value="{{ patient_profile.age }}"{% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> <span data-translate="districtKarnataka">District (Karnataka)</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <select class="form-select" id="district" name="district" required>
+                                <option value="" data-translate="selectYourDistrict">Select your district</option>
+                                {% for code, name in districts %}
+                                <option value="{{ code }}"{% if patient_profile and patient_profile.district == code %} selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-home"></i> <span data-translate="economicStatus">Economic Status</span>
+                        </label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <label class="radio-card">
+                                <input type="radio" name="economic_status" value="BPL" required{% if patient_profile and patient_profile.economic_status == 'BPL' %} checked{% endif %}>
+                                <div class="radio-card-content">
+                                    <i class="fas fa-users"></i>
+                                    <span data-translate="bpl">BPL</span>
+                                    <small data-translate="belowPovertyLine">Below Poverty Line</small>
+                                </div>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="economic_status" value="APL" required{% if patient_profile and patient_profile.economic_status == 'APL' %} checked{% endif %}>
+                                <div class="radio-card-content">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span data-translate="apl">APL</span>
+                                    <small data-translate="abovePovertyLine">Above Poverty Line</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i> <span data-translate="documentAvailability">Document Availability</span>
+                        </label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="has_ration_card" id="has_ration_card"{% if patient_profile and patient_profile.has_ration_card %} checked{% endif %}>
+                                <div class="checkbox-card-content">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span data-translate="rationCard">Ration Card</span>
+                                </div>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="has_aadhaar" id="has_aadhaar"{% if patient_profile and patient_profile.has_aadhaar %} checked{% endif %}>
+                                <div class="checkbox-card-content">
+                                    <i class="fas fa-id-badge"></i>
+                                    <span data-translate="aadhaarCard">Aadhaar Card</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-heartbeat"></i> <span data-translate="diseaseMedicalCondition">Disease / Medical Condition</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-heartbeat"></i>
+                            <select class="form-select" id="disease_type" name="disease_type" required>
+                                <option value="" data-translate="selectCondition">Select condition</option>
+                                {% for code, name in disease_types %}
+                                <option value="{{ code }}"{% if patient_profile and patient_profile.disease_type == code %} selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-language"></i> <span data-translate="preferredLanguage">Preferred Language</span>
+                        </label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <label class="radio-card">
+                                <input type="radio" name="language" value="English" checked>
+                                <div class="radio-card-content">
+                                    <span data-translate="english">English</span>
+                                </div>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="language" value="Kannada">
+                                <div class="radio-card-content">
+                                    <span data-translate="kannada">ಕನ್ನಡ</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-glow" style="width: 100%; padding: 1.25rem; font-size: 1.125rem; margin-top: 1rem;">
+                        <i class="fas fa-magic"></i> <span data-translate="checkEligibilityWithAI">Check Eligibility with AI</span>
+                    </button>
+                </form>
+
+                <div id="loadingState" style="display: none; text-align: center; padding: 2rem;">
+                    <div style="width: 80px; height: 80px; border: 4px solid rgba(16, 185, 129, 0.2); border-top-color: var(--primary-emerald); border-radius: 50%; margin: 0 auto 1rem; animation: spin 1s linear infinite;"></div>
+                    <h3 data-translate="aiAnalyzing">AI is analyzing...</h3>
+                    <p style="color: var(--gray-300);" data-translate="findingBestSchemes">Finding the best schemes for you</p>
+                </div>
+            </div>
+
+            <!-- Result Card -->
+            <div class="glass-card-premium" id="resultCard" style="display: none; margin-top: 2rem;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-emerald); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: var(--shadow-glow);">
+                        <i class="fas fa-check-circle" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h2 id="schemeName" style="margin-bottom: 0.5rem;">Scheme Name</h2>
+                    <div id="schemeType" style="display: inline-block; padding: 0.5rem 1.5rem; background: rgba(16, 185, 129, 0.2); border-radius: 50px; font-weight: 600; margin-bottom: 1rem;">
+                        <span data-translate="karnatakaScheme">Karnataka Scheme</span>
+                    </div>
+                </div>
+
+                <!-- Eligibility Score -->
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600;" data-translate="eligibilityScore">Eligibility Score</span>
+                        <span id="eligibilityScore" style="font-size: 1.5rem; font-weight: 800; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 50px; overflow: hidden;">
+                        <div id="scoreBar" style="height: 100%; background: var(--gradient-emerald); width: 0%; transition: width 1s ease-out;"></div>
+                    </div>
+                </div>
+
+                <!-- Why Eligible -->
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--primary-emerald); border-radius: 12px;">
+                    <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> <span data-translate="whyYoureEligible">Why You're Eligible</span></h4>
+                    <p id="whyEligible" style="color: var(--gray-300); line-height: 1.8;"></p>
+                </div>
+
+                <!-- Required Documents -->
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem;"><i class="fas fa-file-alt"></i> <span data-translate="requiredDocuments">Required Documents</span></h4>
+                    <div id="documentsList" style="display: grid; gap: 0.75rem;"></div>
+                </div>
+
+                <!-- Apply Steps -->
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem;"><i class="fas fa-list-ol"></i> <span data-translate="howToApply">How to Apply</span></h4>
+                    <div id="applySteps" style="display: grid; gap: 1rem;"></div>
+                </div>
+
+                <button onclick="location.reload()" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-redo"></i> <span data-translate="checkAnotherScheme">Check Another Scheme</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.radio-card, .checkbox-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.radio-card input, .checkbox-card input {
+    position: absolute;
+    opacity: 0;
+}
+
+.radio-card-content, .checkbox-card-content {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    text-align: center;
+    transition: var(--transition-base);
+}
+
+.radio-card input:checked + .radio-card-content,
+.checkbox-card input:checked + .checkbox-card-content {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: var(--primary-emerald);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.radio-card-content i, .checkbox-card-content i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.radio-card-content span, .checkbox-card-content span {
+    font-weight: 600;
+    display: block;
+}
+
+.radio-card-content small {
+    font-size: 0.75rem;
+    color: var(--gray-300);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('schemeForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        age: parseInt(document.getElementById('age').value),
+        district: document.getElementById('district').value,
+        economic_status: document.querySelector('input[name="economic_status"]:checked').value,
+        has_ration_card: document.getElementById('has_ration_card').checked,
+        has_aadhaar: document.getElementById('has_aadhaar').checked,
+        disease_type: document.getElementById('disease_type').value,
+        language: document.querySelector('input[name="language"]:checked').value
+    };
+    
+    // Show loading
+    document.getElementById('schemeForm').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    
+    try {
+        const response = await fetch('/api/check-eligibility/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            displayResults(result.data);
+        } else {
+            alert('Error: ' + (result.error || 'Something went wrong'));
+            location.reload();
+        }
+    } catch (error) {
+        alert('Error connecting to AI service. Please try again.');
+        location.reload();
+    }
+});
+
+function displayResults(data) {
+    // Hide loading
+    document.getElementById('inputCard').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'none';
+    
+    // Show results
+    const resultCard = document.getElementById('resultCard');
+    resultCard.style.display = 'block';
+    resultCard.style.animation = 'fade-in-up 0.6s ease-out';
+    
+    // Populate data
+    document.getElementById('schemeName').textContent = data.scheme_name;
+    document.getElementById('schemeType').textContent = data.scheme_type + ' Scheme';
+    document.getElementById('eligibilityScore').textContent = data.eligibility_score;
+    document.getElementById('whyEligible').textContent = data.why_eligible;
+    
+    // Animate score bar
+    setTimeout(() => {
+        document.getElementById('scoreBar').style.width = data.eligibility_score;
+    }, 300);
+    
+    // Documents
+    const docsList = document.getElementById('documentsList');
+    docsList.innerHTML = data.required_documents.map(doc => `
+        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--success-green);"></i>
+            <span>${doc}</span>
+        </div>
+    `).join('');
+    
+    // Steps
+    const stepsList = document.getElementById('applySteps');
+    stepsList.innerHTML = data.apply_steps.map((step, index) => `
+        <div style="padding: 1.25rem; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary-emerald); border-radius: 8px;">
+            <strong style="color: var(--primary-emerald);">Step ${index + 1}:</strong> ${step}
+        </div>
+    `).join('');
+}
+</script>
+{% endblock %}

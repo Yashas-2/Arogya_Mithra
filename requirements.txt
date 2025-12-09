@@ -1,0 +1,24 @@
+# ArogyaMitra AI - Python Dependencies
+
+# Core Django
+django==5.2.8
+djangorestframework==3.16.1
+
+# AI & ML
+google-generativeai==0.8.5
+
+# File Processing
+pillow==12.0.0
+pymupdf==1.26.6
+pytesseract==0.3.13
+PyPDF2==3.0.1
+
+# Database (Production)
+psycopg2-binary==2.9.11
+
+# Configuration
+python-decouple==3.8
+cryptography==43.0.3
+
+# Development
+django-cors-headers==4.4.0

@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+
+{% block title %}Medical Report Vault - ArogyaMitra AI{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--gradient-dark);">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="margin-bottom: 1rem;">
+                Your <span class="gradient-text">Lifetime Medical Vault</span>
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--gray-300);">
+                Upload and store all your medical reports in one secure place
+            </p>
+        </div>
+
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- Upload Section -->
+            <div class="glass-card" style="margin-bottom: 3rem;">
+                <h3 style="margin-bottom: 2rem;">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload New Report
+                </h3>
+
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Report Title</label>
+                            <input type="text" class="form-input" id="reportTitle" name="title" required placeholder="e.g., Blood Test - Nov 2025">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Report Type</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-file-medical"></i>
+                                <select class="form-select" id="scanType" name="scan_type" required>
+                                    <option value="">Select type</option>
+                                    {% for code, name in scan_types %}
+                                    <option value="{{ code }}">{{ name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Hospital Name (Optional)</label>
+                            <input type="text" class="form-input" id="hospitalName" name="hospital_name" placeholder="Hospital name">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Test Date (Optional)</label>
+                            <input type="date" class="form-input" id="testDate" name="test_date">
+                        </div>
+                    </div>
+
+                    <!-- Drag & Drop Zone -->
+                    <div id="dropZone" class="drop-zone">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 4rem; color: var(--primary-emerald); margin-bottom: 1rem;"></i>
+                        <h3 style="margin-bottom: 0.5rem;">Drag & Drop PDF Here</h3>
+                        <p style="color: var(--gray-300); margin-bottom: 1rem;">or click to browse</p>
+                        <input type="file" id="fileInput" name="report_file" accept=".pdf" style="display: none;" required>
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                        <p style="font-size: 0.875rem; color: var(--gray-300); margin-top: 1rem;">
+                            <i class="fas fa-info-circle"></i> Max file size: 10MB | Format: PDF only
+                        </p>
+                    </div>
+
+                    <div id="filePreview" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <i class="fas fa-file-pdf" style="font-size: 2rem; color: var(--danger-red);"></i>
+                                <div>
+                                    <p id="fileName" style="font-weight: 600; margin-bottom: 0.25rem;"></p>
+                                    <p id="fileSize" style="font-size: 0.875rem; color: var(--gray-300);"></p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="clearFile()" class="btn" style="background: transparent; color: var(--danger-red);">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-glow" style="width: 100%; margin-top: 1.5rem; padding: 1.25rem;">
+                        <i class="fas fa-upload"></i> Upload Report
+                    </button>
+                </form>
+            </div>
+
+            <!-- Reports List -->
+            <div>
+                <h3 style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fas fa-folder-open"></i> Your Reports</span>
+                    <span id="reportCount" style="font-size: 1rem; color: var(--gray-300);">Loading...</span>
+                </h3>
+
+                <div id="reportsGrid" class="features-grid">
+                    <!-- Reports will be loaded here -->
+                </div>
+
+                <div id="emptyState" style="display: none; text-align: center; padding: 4rem 2rem;">
+                    <i class="fas fa-inbox" style="font-size: 4rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 0.5rem;">No Reports Yet</h3>
+                    <p style="color: var(--gray-300);">Upload your first medical report to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.drop-zone {
+    border: 3px dashed rgba(16, 185, 129, 0.3);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: var(--transition-base);
+    cursor: pointer;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+    border-color: var(--primary-emerald);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.report-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.report-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-emerald);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+}
+
+.report-type-badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    background: rgba(16, 185, 129, 0.2);
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-emerald);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Drag & Drop functionality
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+});
+
+dropZone.addEventListener('drop', handleDrop, false);
+dropZone.addEventListener('click', () => fileInput.click());
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    fileInput.files = files;
+    showFilePreview(files[0]);
+}
+
+fileInput.addEventListener('change', function() {
+    if (this.files.length > 0) {
+        showFilePreview(this.files[0]);
+    }
+});
+
+function showFilePreview(file) {
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+    document.getElementById('filePreview').style.display = 'block';
+}
+
+function clearFile() {
+    fileInput.value = '';
+    document.getElementById('filePreview').style.display = 'none';
+}
+
+// Upload form submission
+document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/upload-report/', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ Report uploaded successfully!');
+            this.reset();
+            clearFile();
+            loadReports();
+        } else {
+            if (result.upgrade_required) {
+                if (confirm(result.error + '\n\nUpgrade to Premium now?')) {
+                    window.location.href = '/premium/';
+                }
+            } else {
+                alert('Error: ' + result.error);
+            }
+        }
+    } catch (error) {
+        alert('Error uploading report. Please try again.');
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+// Load reports
+async function loadReports() {
+    try {
+        const response = await fetch('/api/reports/');
+        const result = await response.json();
+        
+        if (result.success && result.data.length > 0) {
+            document.getElementById('reportCount').textContent = `${result.data.length} Reports`;
+            document.getElementById('emptyState').style.display = 'none';
+            displayReports(result.data);
+        } else {
+            document.getElementById('reportCount').textContent = '0 Reports';
+            document.getElementById('emptyState').style.display = 'block';
+            document.getElementById('reportsGrid').innerHTML = '';
+        }
+    } catch (error) {
+        console.error('Error loading reports:', error);
+    }
+}
+
+function displayReports(reports) {
+    const grid = document.getElementById('reportsGrid');
+    grid.innerHTML = reports.map(report => `
+        <div class="report-card" onclick="window.open('${report.file_url || '#'}', '_blank')">
+            <div style="display: flex; align-items: start; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-file-pdf" style="font-size: 2.5rem; color: var(--danger-red);"></i>
+                <div style="flex: 1;">
+                    <h4 style="margin-bottom: 0.5rem;">${report.title}</h4>
+                    <span class="report-type-badge">${report.scan_type}</span>
+                </div>
+            </div>
+            
+            ${report.hospital_name ? `
+                <p style="color: var(--gray-300); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-hospital"></i> ${report.hospital_name}
+                </p>
+            ` : ''}
+            
+            <p style="color: var(--gray-300); font-size: 0.875rem; margin-bottom: 1rem;">
+                <i class="fas fa-calendar"></i> Uploaded: ${new Date(report.uploaded_date).toLocaleDateString()}
+            </p>
+            
+            <div style="display: flex; gap: 0.5rem;">
+                <button onclick="analyzeReport(${report.id}); event.stopPropagation();" class="btn btn-primary" style="flex: 1; padding: 0.75rem;">
+                    <i class="fas fa-brain"></i> Analyze
+                </button>
+                <button onclick="window.open('${report.file_url || '#'}', '_blank'); event.stopPropagation();" class="btn btn-outline" style="flex: 1; padding: 0.75rem;">
+                    <i class="fas fa-download"></i> View
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function analyzeReport(reportId) {
+    localStorage.setItem('reportToAnalyze', reportId);
+    window.location.href = '/report-analysis/';
+}
+
+// Load reports on page load
+loadReports();
+</script>
+{% endblock %}

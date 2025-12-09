@@ -1,0 +1,509 @@
+{% extends 'base.html' %}
+
+{% block title %}Upgrade to Premium - ArogyaMitra AI{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--gradient-dark); position: relative; overflow: hidden;">
+    <!-- Animated Background -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; z-index: 0;">
+        <div style="position: absolute; top: 20%; left: 10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%); border-radius: 50%; filter: blur(60px); animation: float 8s ease-in-out infinite;"></div>
+        <div style="position: absolute; top: 60%; right: 10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, transparent 70%); border-radius: 50%; filter: blur(80px); animation: float 10s ease-in-out infinite 2s;"></div>
+    </div>
+
+    <div class="container" style="position: relative; z-index: 2;">
+        <!-- Hero Section -->
+        <div style="text-align: center; margin-bottom: 5rem;">
+            <div style="display: inline-block; padding: 0.75rem 2rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 50px; margin-bottom: 2rem;">
+                <i class="fas fa-crown" style="color: var(--neon-teal);"></i> 
+                <span style="font-weight: 600; color: var(--neon-teal); margin-left: 0.5rem;">UNLOCK UNLIMITED POWER</span>
+            </div>
+            
+            <h1 style="font-size: clamp(3rem, 6vw, 5rem); margin-bottom: 1.5rem; line-height: 1.1;">
+                Experience <span class="gradient-text">Healthcare</span><br>
+                Without <span class="gradient-text">Limits</span>
+            </h1>
+            
+            <p style="font-size: 1.25rem; color: var(--gray-300); max-width: 600px; margin: 0 auto;">
+                Join 2,000+ users already using unlimited AI power to understand their health better
+            </p>
+        </div>
+
+        <!-- Pricing Card -->
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <div class="glass-card-premium" style="padding: 0; overflow: hidden; border: 2px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 60px rgba(16, 185, 129, 0.2), 0 20px 50px rgba(0, 0, 0, 0.3);">
+                <!-- Price Header -->
+                <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); padding: 3rem; text-align: center; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+                    <h2 style="font-size: 1.25rem; color: var(--gray-300); margin-bottom: 1rem; font-weight: 500;">ArogyaMitra</h2>
+                    <div style="display: flex; align-items: baseline; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="font-size: 5rem; font-weight: 900; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">₹49</span>
+                        <span style="font-size: 1.5rem; color: var(--gray-300);">/month</span>
+                    </div>
+                    <p style="font-size: 1rem; color: var(--success-green); margin-bottom: 2rem;">
+                        <i class="fas fa-fire"></i> 2,000 users = <strong>₹98,000/month</strong> recurring revenue
+                    </p>
+                    <button onclick="upgradeToPremium()" class="btn btn-glow" style="padding: 1.5rem 4rem; font-size: 1.25rem; box-shadow: 0 15px 40px rgba(0, 255, 245, 0.5);">
+                        <i class="fas fa-crown"></i> Upgrade to Premium Now
+                    </button>
+                    <p style="font-size: 0.875rem; color: var(--gray-300); margin-top: 1rem;">
+                        <i class="fas fa-lock"></i> Secure payment • Cancel anytime
+                    </p>
+                </div>
+
+                <!-- Feature Comparison -->
+                <div style="padding: 3rem;">
+                    <h3 style="text-align: center; margin-bottom: 3rem; font-size: 2rem;">What You Get</h3>
+                    
+                    <div style="display: grid; gap: 0;">
+                        <!-- Header -->
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding: 1rem 1.5rem; border-bottom: 2px solid rgba(255, 255, 255, 0.1); font-weight: 600;">
+                            <div>Feature</div>
+                            <div style="text-align: center;">Free</div>
+                            <div style="text-align: center;">
+                                <span style="background: var(--gradient-emerald); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.875rem;">PREMIUM</span>
+                            </div>
+                        </div>
+
+                        <!-- Features -->
+                            <div>
+                        
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); align-items: center;">
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.25rem;">AI Report Analysis</strong>
+                                <span style="font-size: 0.875rem; color: var(--gray-300);">Understand reports in simple language</span>
+                            </div>
+                            <div style="text-align: center; color: var(--warning-yellow);">3/month</div>
+                            <div style="text-align: center; color: var(--success-green); font-weight: 700;">UNLIMITED</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); align-items: center;">
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.25rem;">Scheme Eligibility Checker</strong>
+                                <span style="font-size: 0.875rem; color: var(--gray-300);">Find government health schemes</span>
+                            </div>
+                            <div style="text-align: center; color: var(--success-green);"><i class="fas fa-check"></i></div>
+                            <div style="text-align: center; color: var(--success-green);"><i class="fas fa-check"></i> Fast Priority</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); align-items: center;">
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.25rem;">Lifetime Storage</strong>
+                                <span style="font-size: 0.875rem; color: var(--gray-300);">Secure cloud storage forever</span>
+                            </div>
+                            <div style="text-align: center; color: var(--gray-300);">Basic</div>
+                            <div style="text-align: center; color: var(--success-green); font-weight: 700;">PREMIUM VAULT</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); align-items: center;">
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.25rem;">Advertisements</strong>
+                                <span style="font-size: 0.875rem; color: var(--gray-300);">Ad-free experience</span>
+                            </div>
+                            <div style="text-align: center; color: var(--danger-red);"><i class="fas fa-times"></i> With Ads</div>
+                            <div style="text-align: center; color: var(--success-green);"><i class="fas fa-check"></i> AD-FREE</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); align-items: center;">
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.25rem;">Priority Support</strong>
+                                <span style="font-size: 0.875rem; color: var(--gray-300);">24/7 customer support</span>
+                            </div>
+                            <div style="text-align: center; color: var(--gray-300);">Standard</div>
+                            <div style="text-align: center; color: var(--success-green); font-weight: 700;">PRIORITY</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; padding: 1.5rem; align-items: center;">
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.25rem;">Kannada Language Support</strong>
+                                <span style="font-size: 0.875rem; color: var(--gray-300);">Reports in ಕನ್ನಡ</span>
+                            </div>
+                            <div style="text-align: center; color: var(--success-green);"><i class="fas fa-check"></i></div>
+                            <div style="text-align: center; color: var(--success-green);"><i class="fas fa-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials / Trust -->
+            <div style="margin-top: 4rem; text-align: center;">
+                <p style="font-size: 1.125rem; color: var(--gray-300); margin-bottom: 2rem;">
+                    Trusted by thousands of Karnataka residents
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 50px;">
+                        <i class="fas fa-shield-alt" style="color: var(--success-green);"></i>
+                        <span>Secure & Private</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 50px;">
+                        <i class="fas fa-check-circle" style="color: var(--success-green);"></i>
+                        <span>Cancel Anytime</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 50px;">
+                        <i class="fas fa-heart" style="color: var(--danger-red);"></i>
+                        <span>Made for Karnataka</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final CTA -->
+            <div style="margin-top: 4rem; text-align: center; padding: 3rem; background: rgba(255, 255, 255, 0.02); border-radius: 24px;">
+                <h3 style="margin-bottom: 1rem; font-size: 2rem;">Ready to unlock full power?</h3>
+                <p style="color: var(--gray-300); margin-bottom: 2rem; font-size: 1.125rem;">
+                    Join now and get unlimited access to all premium features
+                </p>
+                <button onclick="upgradeToPremium()" class="btn btn-glow" style="padding: 1.5rem 4rem; font-size: 1.25rem;">
+                    <i class="fas fa-rocket"></i> Start Premium Journey
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+@media (max-width: 768px) {
+    .glass-card-premium > div > div:not(:first-child) {
+        grid-template-columns: 2fr 0.8fr 0.8fr !important;
+        font-size: 0.875rem;
+    }
+}
+
+/* Premium Modal Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideUpBounce {
+    0% {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes successBounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function upgradeToPremium() {
+    // Show innovative slide-up confirmation panel instead of alert
+    showPremiumConfirmation();
+}
+
+function showPremiumConfirmation() {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'premiumOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 14, 39, 0.95);
+        backdrop-filter: blur(20px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease-out;
+    `;
+    
+    // Create premium confirmation card
+    const card = document.createElement('div');
+    card.style.cssText = `
+        max-width: 500px;
+        width: 90%;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(16, 185, 129, 0.4);
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 0 0 60px rgba(0, 255, 245, 0.3), 0 20px 50px rgba(0, 0, 0, 0.5);
+        animation: slideUpBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        text-align: center;
+    `;
+    
+    card.innerHTML = `
+        <div style="width: 100px; height: 100px; margin: 0 auto 2rem; background: var(--gradient-neon); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse-glow 2s ease-in-out infinite;">
+            <i class="fas fa-crown" style="font-size: 3rem; color: var(--dark-bg);"></i>
+        </div>
+        
+        <h2 style="font-size: 2rem; margin-bottom: 1rem; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Unlock Premium Power
+        </h2>
+        
+        <p style="font-size: 1.125rem; color: var(--gray-300); margin-bottom: 2rem; line-height: 1.8;">
+            Get unlimited access to all AI features for just <strong style="color: var(--neon-teal); font-size: 1.5rem;">₹49/month</strong>
+        </p>
+        
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; text-align: left;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <i class="fas fa-check-circle" style="color: var(--success-green); font-size: 1.25rem;"></i>
+                <span>Unlimited Reports Upload</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <i class="fas fa-check-circle" style="color: var(--success-green); font-size: 1.25rem;"></i>
+                <span>Unlimited AI Analysis</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <i class="fas fa-check-circle" style="color: var(--success-green); font-size: 1.25rem;"></i>
+                <span>Ad-Free Experience</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fas fa-check-circle" style="color: var(--success-green); font-size: 1.25rem;"></i>
+                <span>Priority Support 24/7</span>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <button onclick="cancelPremium()" style="flex: 1; padding: 1rem; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
+                <i class="fas fa-times"></i> Maybe Later
+            </button>
+            <button onclick="showPaymentOptions()" style="flex: 1; padding: 1rem; background: var(--gradient-neon); border: none; border-radius: 12px; color: var(--dark-bg); font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(0, 255, 245, 0.4); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0, 255, 245, 0.6)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(0, 255, 245, 0.4)'">
+                <i class="fas fa-rocket"></i> Upgrade Now
+            </button>
+        </div>
+        
+        <p style="font-size: 0.875rem; color: var(--gray-300); margin-top: 1.5rem;">
+            <i class="fas fa-shield-alt"></i> Secure payment • Cancel anytime
+        </p>
+    `;
+    
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+function cancelPremium() {
+    const overlay = document.getElementById('premiumOverlay');
+    if (overlay) {
+        overlay.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            overlay.remove();
+            document.body.style.overflow = 'auto';
+        }, 300);
+    }
+}
+
+function showPaymentOptions() {
+    // Show payment options panel
+    const overlay = document.getElementById('premiumOverlay');
+    const card = overlay.querySelector('div');
+    
+    card.innerHTML = `
+        <div style="padding: 2rem;">
+            <h2 style="margin-bottom: 1.5rem; text-align: center; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="fas fa-credit-card"></i> Choose Payment Method
+            </h2>
+            
+            <p style="color: var(--gray-300); text-align: center; margin-bottom: 2rem;">
+                Pay ₹49/month securely using your preferred method
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                <button onclick="processPayment('googlepay')" style="padding: 1.5rem; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;" onmouseover="this.style.borderColor='rgba(66, 133, 244, 0.5)'; this.style.background='rgba(66, 133, 244, 0.1)'" onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+                    <i class="fab fa-google" style="font-size: 2rem; color: #4285F4;"></i>
+                    <span>Google Pay</span>
+                </button>
+                
+                <button onclick="processPayment('phonepe')" style="padding: 1.5rem; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;" onmouseover="this.style.borderColor='rgba(129, 61, 156, 0.5)'; this.style.background='rgba(129, 61, 156, 0.1)'" onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+                    <i class="fas fa-mobile-alt" style="font-size: 2rem; color: #813D9C;"></i>
+                    <span>PhonePe</span>
+                </button>
+                
+                <button onclick="processPayment('navi')" style="padding: 1.5rem; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;" onmouseover="this.style.borderColor='rgba(0, 184, 148, 0.5)'; this.style.background='rgba(0, 184, 148, 0.1)'" onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+                    <i class="fas fa-rupee-sign" style="font-size: 2rem; color: #00B894;"></i>
+                    <span>Navi</span>
+                </button>
+                
+                <button onclick="processPayment('other')" style="padding: 1.5rem; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;" onmouseover="this.style.borderColor='rgba(16, 185, 129, 0.5)'; this.style.background='rgba(16, 185, 129, 0.1)'" onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+                    <i class="fas fa-credit-card" style="font-size: 2rem; color: var(--primary-emerald);"></i>
+                    <span>Other Methods</span>
+                </button>
+            </div>
+            
+            <button onclick="showPremiumConfirmation()" style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </div>
+    `;
+}
+
+function processPayment(method) {
+    // Show processing state
+    const overlay = document.getElementById('premiumOverlay');
+    const card = overlay.querySelector('div');
+    
+    // Set payment method specific styling
+    let methodColor = '#4285F4';
+    let methodName = 'Google Pay';
+    
+    switch(method) {
+        case 'phonepe':
+            methodColor = '#813D9C';
+            methodName = 'PhonePe';
+            break;
+        case 'navi':
+            methodColor = '#00B894';
+            methodName = 'Navi';
+            break;
+        case 'other':
+            methodColor = 'var(--primary-emerald)';
+            methodName = 'Other Payment';
+            break;
+    }
+    
+    card.innerHTML = `
+        <div style="padding: 2rem; text-align: center;">
+            <div style="width: 80px; height: 80px; border: 4px solid rgba(${methodColor === 'var(--primary-emerald)' ? '16, 185, 129' : methodColor}, 0.2); border-top-color: ${methodColor}; border-radius: 50%; margin: 0 auto 2rem; animation: spin 1s linear infinite;"></div>
+            <h3 style="margin-bottom: 1rem;">Processing Payment via ${methodName}</h3>
+            <p style="color: var(--gray-300);">Please wait while we redirect you to the payment gateway</p>
+        </div>
+    `;
+    
+    // Simulate payment redirect (in production, integrate with actual payment gateway)
+    setTimeout(() => {
+        // Generate a payment ID
+        const paymentId = 'PAY_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        // Process the payment
+        confirmPremiumUpgrade();
+    }, 2000);
+}
+
+async function confirmPremiumUpgrade() {
+    // Show processing state
+    const overlay = document.getElementById('premiumOverlay');
+    const card = overlay.querySelector('div');
+    card.innerHTML = `
+        <div style="padding: 2rem;">
+            <div style="width: 80px; height: 80px; border: 4px solid rgba(0, 255, 245, 0.2); border-top-color: var(--neon-teal); border-radius: 50%; margin: 0 auto 2rem; animation: spin 1s linear infinite;"></div>
+            <h3 style="margin-bottom: 1rem;">Processing Payment...</h3>
+            <p style="color: var(--gray-300);">Please wait while we activate your premium membership</p>
+        </div>
+    `;
+    
+    // Simulate payment (in production, integrate with Razorpay/Stripe)
+    const paymentId = 'PAY_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+        const response = await fetch('/api/upgrade-premium/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                payment_id: paymentId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success animation
+            card.innerHTML = `
+                <div style="padding: 2rem;">
+                    <div style="width: 100px; height: 100px; background: var(--gradient-emerald); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; animation: successBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);">
+                        <i class="fas fa-check" style="font-size: 3rem; color: white;"></i>
+                    </div>
+                    <h2 style="margin-bottom: 1rem; color: var(--success-green);">🎉 Welcome to Premium!</h2>
+                    <p style="color: var(--gray-300); margin-bottom: 2rem;">You now have unlimited access to all features</p>
+                    <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
+                        <span style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 50px; font-size: 0.875rem;">✓ Unlimited AI</span>
+                        <span style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 50px; font-size: 0.875rem;">✓ No Ads</span>
+                        <span style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 50px; font-size: 0.875rem;">✓ Priority Support</span>
+                    </div>
+                </div>
+            `;
+            
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        } else {
+            // Show error
+            card.innerHTML = `
+                <div style="padding: 2rem;">
+                    <div style="width: 100px; height: 100px; background: rgba(239, 68, 68, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger-red);"></i>
+                    </div>
+                    <h3 style="margin-bottom: 1rem; color: var(--danger-red);">Payment Failed</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 2rem;">${result.error || 'Please try again or contact support'}</p>
+                    <button onclick="cancelPremium()" class="btn btn-primary" style="width: 100%;">
+                        Close
+                    </button>
+                </div>
+            `;
+        }
+    } catch (error) {
+        // Show error
+        card.innerHTML = `
+            <div style="padding: 2rem;">
+                <div style="width: 100px; height: 100px; background: rgba(239, 68, 68, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger-red);"></i>
+                </div>
+                <h3 style="margin-bottom: 1rem; color: var(--danger-red);">Connection Error</h3>
+                <p style="color: var(--gray-300); margin-bottom: 2rem;">Please check your internet and try again</p>
+                <button onclick="cancelPremium()" class="btn btn-primary" style="width: 100%;">
+                    Close
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Add animation on scroll
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animation = 'fade-in-up 0.6s ease-out';
+        }
+    });
+});
+
+document.querySelectorAll('.glass-card-premium').forEach(el => {
+    observer.observe(el);
+});
+</script>
+{% endblock %}

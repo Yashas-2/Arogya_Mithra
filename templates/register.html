@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ArogyaMitra AI</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .role-selection {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.5rem;
+            border-radius: 16px;
+        }
+
+        .role-option {
+            flex: 1;
+            padding: 1.5rem;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .role-option.selected {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2));
+            border-color: var(--emerald);
+        }
+
+        .role-option i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--emerald);
+        }
+
+        .role-option.patient i {
+            color: var(--emerald);
+        }
+
+        .role-option.hospital i {
+            color: var(--teal);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--emerald);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .register-btn:hover::before {
+            left: 100%;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideInDown 0.3s ease;
+        }
+
+        .alert.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .login-link a {
+            color: var(--emerald);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Language Toggle Styles */
+        .language-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            color: white;
+            border-color: transparent;
+        }
+
+        .custom-scan-type {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .custom-disease-type {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .register-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .language-toggle {
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+            
+            .lang-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+        <button class="lang-btn" data-lang="en">English</button>
+        <button class="lang-btn active" data-lang="kn">ಕನ್ನಡ</button>
+    </div>
+
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h1 data-translate="createAccount">Create Account</h1>
+                <p data-translate="selectAccountType">Select your account type to get started</p>
+            </div>
+
+            <div class="role-selection">
+                <div class="role-option patient selected" data-role="patient">
+                    <i class="fas fa-user-injured"></i>
+                    <h3 data-translate="patient">Patient</h3>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;" data-translate="patientDescription">
+                        Access health reports and AI analysis
+                    </p>
+                </div>
+                
+                <div class="role-option hospital" data-role="hospital">
+                    <i class="fas fa-hospital-user"></i>
+                    <h3 data-translate="hospitalStaff">Hospital Staff</h3>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;" data-translate="hospitalDescription">
+                        Upload and manage patient reports
+                    </p>
+                </div>
+            </div>
+
+            <div class="alert error" id="errorAlert"></div>
+
+            <!-- Patient Registration Form -->
+            <div class="form-section active" id="patientForm">
+                <h3 style="margin-bottom: 1.5rem; color: var(--emerald);">
+                    <i class="fas fa-user-injured"></i> <span data-translate="patientRegistration">Patient Registration</span>
+                </h3>
+                
+                <form id="patientRegistrationForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="patientUsername" data-translate="username">Username *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="patientUsername" class="form-input" required placeholder="Enter username">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientEmail" data-translate="email">Email *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="patientEmail" class="form-input" required placeholder="Enter email">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientPassword" data-translate="password">Password *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="patientPassword" class="form-input" required minlength="8" placeholder="Enter password">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientConfirmPassword" data-translate="confirmPassword">Confirm Password *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="patientConfirmPassword" class="form-input" required placeholder="Confirm password">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="patientFullName" data-translate="fullName">Full Name *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-id-card"></i>
+                                <input type="text" id="patientFullName" class="form-input" required placeholder="Enter full name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientPhone" data-translate="phoneNumber">Phone Number *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-phone"></i>
+                                <input type="tel" id="patientPhone" class="form-input" required placeholder="+91XXXXXXXXXX">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientAge" data-translate="age">Age *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-birthday-cake"></i>
+                                <input type="number" id="patientAge" class="form-input" required min="1" max="120" placeholder="Enter age">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientDistrict" data-translate="district">District *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <select id="patientDistrict" class="form-select" required>
+                                    <option value="" data-translate="selectDistrict">Select District</option>
+                                    <option value="Bagalkot">Bagalkot</option>
+                                    <option value="Bengaluru Urban">Bengaluru Urban</option>
+                                    <option value="Bengaluru Rural">Bengaluru Rural</option>
+                                    <option value="Belagavi">Belagavi</option>
+                                    <option value="Ballari">Ballari</option>
+                                    <option value="Bidar">Bidar</option>
+                                    <option value="Chamarajanagar">Chamarajanagar</option>
+                                    <option value="Chikkamagaluru">Chikkamagaluru</option>
+                                    <option value="Chikkaballapur">Chikkaballapur</option>
+                                    <option value="Chitradurga">Chitradurga</option>
+                                    <option value="Dakshina Kannada">Dakshina Kannada</option>
+                                    <option value="Davanagere">Davanagere</option>
+                                    <option value="Dharwad">Dharwad</option>
+                                    <option value="Gadag">Gadag</option>
+                                    <option value="Kalaburagi">Kalaburagi</option>
+                                    <option value="Hassan">Hassan</option>
+                                    <option value="Haveri">Haveri</option>
+                                    <option value="Kodagu">Kodagu</option>
+                                    <option value="Kolar">Kolar</option>
+                                    <option value="Koppal">Koppal</option>
+                                    <option value="Mandya">Mandya</option>
+                                    <option value="Mysuru">Mysuru</option>
+                                    <option value="Raichur">Raichur</option>
+                                    <option value="Ramanagara">Ramanagara</option>
+                                    <option value="Shivamogga">Shivamogga</option>
+                                    <option value="Tumakuru">Tumakuru</option>
+                                    <option value="Udupi">Udupi</option>
+                                    <option value="Uttara Kannada">Uttara Kannada</option>
+                                    <option value="Vijayapura">Vijayapura</option>
+                                    <option value="Yadgir">Yadgir</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="patientEconomicStatus" data-translate="economicStatus">Economic Status *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-rupee-sign"></i>
+                                <select id="patientEconomicStatus" class="form-select" required>
+                                    <option value="" data-translate="selectStatus">Select Status</option>
+                                    <option value="BPL" data-translate="bpl">Below Poverty Line (BPL)</option>
+                                    <option value="APL" data-translate="apl">Above Poverty Line (APL)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientDiseaseType" data-translate="diseaseType">Disease Type *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-heartbeat"></i>
+                                <select id="patientDiseaseType" class="form-select" required>
+                                    <option value="" data-translate="selectDisease">Select Disease</option>
+                                    <option value="Cardio" data-translate="cardiovascular">Cardiovascular</option>
+                                    <option value="Diabetes" data-translate="diabetes">Diabetes</option>
+                                    <option value="Cancer" data-translate="cancer">Cancer</option>
+                                    <option value="Neuro" data-translate="neurological">Neurological</option>
+                                    <option value="Ortho" data-translate="orthopedic">Orthopedic</option>
+                                    <option value="Respiratory" data-translate="respiratory">Respiratory</option>
+                                    <option value="Kidney" data-translate="kidney">Kidney Disease</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div class="custom-disease-type" id="customDiseaseTypeContainer" style="display: none; margin-top: 0.5rem;">
+                                <input type="text" id="customDiseaseType" class="form-input" placeholder="Enter disease type">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientScanType" data-translate="scanType">Scan Type *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-file-medical"></i>
+                                <select id="patientScanType" class="form-select" required>
+                                    <option value="" data-translate="selectScanType">Select Scan Type</option>
+                                    <option value="Blood">Blood Test</option>
+                                    <option value="MRI">MRI Scan</option>
+                                    <option value="CT">CT Scan</option>
+                                    <option value="Xray">X-Ray</option>
+                                    <option value="Ultrasound">Ultrasound</option>
+                                    <option value="ECG">ECG</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div class="custom-scan-type" id="customScanTypeContainer" style="display: none; margin-top: 0.5rem;">
+                                <input type="text" id="customScanType" class="form-input" placeholder="Enter scan type">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientAadhaar" data-translate="aadhaarLast4">Aadhaar Last 4 Digits</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-fingerprint"></i>
+                                <input type="text" id="patientAadhaar" class="form-input" maxlength="4" placeholder="XXXX">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="patientRationCard" style="width: auto;">
+                                <label for="patientRationCard" style="margin: 0; color: rgba(255,255,255,0.8);" data-translate="haveRationCard">Have Ration Card?</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                                <input type="checkbox" id="patientHasAadhaar" style="width: auto;">
+                                <label for="patientHasAadhaar" style="margin: 0; color: rgba(255,255,255,0.8);" data-translate="haveAadhaar">Have Aadhaar Card?</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="register-btn">
+                        <i class="fas fa-user-plus"></i> <span data-translate="registerAsPatient">Register as Patient</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Hospital Registration Form -->
+            <div class="form-section" id="hospitalForm">
+                <h3 style="margin-bottom: 1.5rem; color: var(--teal);">
+                    <i class="fas fa-hospital-user"></i> <span data-translate="hospitalStaffRegistration">Hospital Staff Registration</span>
+                </h3>
+                
+                <form id="hospitalRegistrationForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="hospitalUsername" data-translate="username">Username *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="hospitalUsername" class="form-input" required placeholder="Enter username">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hospitalEmail" data-translate="email">Email *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="hospitalEmail" class="form-input" required placeholder="Enter email">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hospitalPassword" data-translate="password">Password *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="hospitalPassword" class="form-input" required minlength="8" placeholder="Enter password">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hospitalConfirmPassword" data-translate="confirmPassword">Confirm Password *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="hospitalConfirmPassword" class="form-input" required placeholder="Confirm password">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="staffName" data-translate="fullName">Full Name *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-id-card"></i>
+                                <input type="text" id="staffName" class="form-input" required placeholder="Enter full name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hospitalName" data-translate="hospitalName">Hospital Name *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-hospital"></i>
+                                <input type="text" id="hospitalName" class="form-input" required placeholder="Enter hospital name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="department" data-translate="department">Department</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-stethoscope"></i>
+                                <input type="text" id="department" class="form-input" placeholder="Enter department">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="licenseNumber" data-translate="licenseNumber">License Number *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-file-medical"></i>
+                                <input type="text" id="licenseNumber" class="form-input" required placeholder="Enter license number">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="register-btn">
+                        <i class="fas fa-user-md"></i> <span data-translate="registerAsHospital">Register as Hospital Staff</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="login-link">
+                <span data-translate="alreadyHaveAccount">Already have an account?</span> <a href="/login/" data-translate="signIn">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Role selection
+        const roleOptions = document.querySelectorAll('.role-option');
+        const forms = document.querySelectorAll('.form-section');
+        
+        roleOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                roleOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                
+                const role = option.dataset.role;
+                forms.forEach(form => {
+                    form.classList.remove('active');
+                });
+                document.getElementById(`${role}Form`).classList.add('active');
+            });
+        });
+
+        // Handle scan type selection for patient registration
+        document.addEventListener('DOMContentLoaded', function() {
+            const patientScanType = document.getElementById('patientScanType');
+            if (patientScanType) {
+                patientScanType.addEventListener('change', function() {
+                    const customScanTypeContainer = document.getElementById('customScanTypeContainer');
+                    const customScanTypeInput = document.getElementById('customScanType');
+                    
+                    if (this.value === 'Others') {
+                        customScanTypeContainer.style.display = 'block';
+                        customScanTypeInput.required = true;
+                    } else {
+                        customScanTypeContainer.style.display = 'none';
+                        customScanTypeInput.required = false;
+                        customScanTypeInput.value = '';
+                    }
+                });
+            }
+            
+            // Handle disease type selection for patient registration
+            const patientDiseaseType = document.getElementById('patientDiseaseType');
+            if (patientDiseaseType) {
+                patientDiseaseType.addEventListener('change', function() {
+                    const customDiseaseTypeContainer = document.getElementById('customDiseaseTypeContainer');
+                    const customDiseaseTypeInput = document.getElementById('customDiseaseType');
+                    
+                    if (this.value === 'Others') {
+                        customDiseaseTypeContainer.style.display = 'block';
+                        customDiseaseTypeInput.required = true;
+                    } else {
+                        customDiseaseTypeContainer.style.display = 'none';
+                        customDiseaseTypeInput.required = false;
+                        customDiseaseTypeInput.value = '';
+                    }
+                });
+            }
+        });
+
+        document.getElementById('patientRegistrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const scanTypeSelect = document.getElementById('patientScanType');
+            const customScanTypeInput = document.getElementById('customScanType');
+            
+            // If "Others" is selected, use the custom value
+            let scanTypeValue = scanTypeSelect.value;
+            if (scanTypeValue === 'Others') {
+                scanTypeValue = customScanTypeInput.value.trim() || 'Other';
+            }
+            
+            const diseaseTypeSelect = document.getElementById('patientDiseaseType');
+            const customDiseaseTypeInput = document.getElementById('customDiseaseType');
+            
+            // If "Others" is selected, use the custom value
+            let diseaseTypeValue = diseaseTypeSelect.value;
+            if (diseaseTypeValue === 'Others') {
+                diseaseTypeValue = customDiseaseTypeInput.value.trim() || 'Other';
+            }
+            
+            const formData = {
+                username: document.getElementById('patientUsername').value,
+                email: document.getElementById('patientEmail').value,
+                password: document.getElementById('patientPassword').value,
+                full_name: document.getElementById('patientFullName').value,
+                phone_number: document.getElementById('patientPhone').value,
+                age: document.getElementById('patientAge').value,
+                district: document.getElementById('patientDistrict').value,
+                economic_status: document.getElementById('patientEconomicStatus').value,
+                disease_type: diseaseTypeValue,
+                scan_type: scanTypeValue,
+                aadhaar_last4: document.getElementById('patientAadhaar').value,
+                has_ration_card: document.getElementById('patientRationCard').checked,
+                has_aadhaar: document.getElementById('patientHasAadhaar').checked
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register-patient/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = '/login/';
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
+            }
+        });
+        
+        document.getElementById('hospitalRegistrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                username: document.getElementById('hospitalUsername').value,
+                email: document.getElementById('hospitalEmail').value,
+                password: document.getElementById('hospitalPassword').value,
+                staff_name: document.getElementById('staffName').value,
+                hospital_name: document.getElementById('hospitalName').value,
+                department: document.getElementById('department').value,
+                license_number: document.getElementById('licenseNumber').value
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register-hospital/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Registration successful! Please wait for admin verification.');
+                    window.location.href = '/login/';
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
+            }
+        });
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
