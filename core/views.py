@@ -1,7 +1,8 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
@@ -152,16 +153,11 @@ def upload_medical_report(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_medical_reports(request):
     """
     Get all medical reports for authenticated user
     """
-    if not request.user.is_authenticated:
-        return Response({
-            'success': False,
-            'error': 'Authentication required'
-        }, status=status.HTTP_401_UNAUTHORIZED)
-    
     try:
         patient_profile = request.user.patient_profile
         reports = MedicalReport.objects.filter(patient=patient_profile)
@@ -178,136 +174,14 @@ def get_medical_reports(request):
             'data': []
         }, status=status.HTTP_200_OK)
 
-def extract_text_from_pdf(file_path):
-    """
-    Extract text content from PDF file using multiple approaches
-    OPTIMIZED: More aggressive limits for 5-second processing
-    """
-    import os
-    import concurrent.futures
-    import time
-    
-    # Check if file exists
-    if not os.path.exists(file_path):
-        print(f"PDF file not found: {file_path}")
-        return None
-    
-    # Try multiple extraction methods in parallel for faster results
-    methods = [
-        _extract_with_pypdf2,
-        _extract_with_pymupdf
-        # Removed OCR (_extract_with_pytesseract) as it's too slow for 5-second requirement
-    ]
-    
-    # Use ThreadPoolExecutor with timeout for parallel processing
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        # Submit all methods
-        future_to_method = {executor.submit(method, file_path): method for method in methods}
-        
-        # Check for results with a 3-second timeout
-        for future in concurrent.futures.as_completed(future_to_method, timeout=3):
-            method = future_to_method[future]
-            try:
-                text = future.result(timeout=1.5)  # 1.5 second timeout per method
-                if text and len(text.strip()) > 30:  # Lowered minimum viable text
-                    print(f"Successfully extracted text using {method.__name__}")
-                    return text.strip()
-            except concurrent.futures.TimeoutError:
-                print(f"Method {method.__name__} timed out")
-            except Exception as e:
-                print(f"Method {method.__name__} failed: {str(e)}")
-                continue
-    
-    return None
-
-def _extract_with_pypdf2(file_path):
-    """Extract text using PyPDF2 - More aggressive optimization"""
-    import PyPDF2
-    with open(file_path, 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
-        text = ''
-        # Limit to first 3 pages for faster processing
-        pages_to_process = min(3, len(pdf_reader.pages))
-        for i in range(pages_to_process):
-            page = pdf_reader.pages[i]
-            extracted = page.extract_text()
-            if extracted:
-                text += extracted
-            # Early exit if we have enough text (lowered threshold)
-            if len(text.strip()) > 200:
-                break
-        return text
-
-def _extract_with_pymupdf(file_path):
-    """Extract text using PyMuPDF (fitz) - More aggressive optimization"""
-    import fitz  # PyMuPDF
-    doc = fitz.open(file_path)
-    text = ''
-    # Limit to first 3 pages for faster processing
-    pages_to_process = min(3, len(doc))
-    for page_num in range(pages_to_process):
-        page = doc.load_page(page_num)
-        text += page.get_text()
-        # Early exit if we have enough text (lowered threshold)
-        if len(text.strip()) > 200:
-            break
-    doc.close()
-    return text
-
-def preprocess_medical_text(text):
-    """
-    Preprocess medical text to identify key sections for faster AI analysis
-    """
-    if not text:
-        return ""
-    
-    # Split text into lines for processing
-    lines = text.split('\n')
-    
-    # Look for common medical report section headers
-    key_sections = [
-        'patient', 'report', 'test', 'result', 'value', 'range', 'normal',
-        'diagnosis', 'findings', 'conclusion', 'summary', 'recommendation',
-        'ರೋಗಿ', 'ವರದಿ', 'ಪರೀಕ್ಷೆ', 'ಫಲಿತಾಂಶ', 'ಮೌಲ್ಯ', 'ಶ್ರೇಣಿ', 'ಸಾಮಾನ್ಯ',
-        'ನಿದಾನ', 'ಹುಡುಕಾಟ', 'ತೀರ್ಮಾನ', 'ಸಾರಾಂಶ', 'ಶಿಫಾರಸು'
-    ]
-    
-    # Filter lines that contain key medical terms
-    filtered_lines = []
-    for line in lines:
-        line_lower = line.lower().strip()
-        # Skip empty lines or lines with only special characters
-        if not line_lower or len(line_lower) < 3:
-            continue
-            
-        # Include lines that contain key medical terms
-        if any(keyword in line_lower for keyword in key_sections):
-            filtered_lines.append(line)
-        # Also include lines that look like test results (contain numbers and units)
-        elif any(char.isdigit() for char in line) and len(line.strip()) > 10:
-            filtered_lines.append(line)
-    
-    # Join filtered lines and truncate to essential content
-    processed_text = '\n'.join(filtered_lines[:50])  # Limit to first 50 relevant lines
-    
-    # If we didn't find enough relevant content, return a portion of the original text
-    if len(processed_text) < 100:
-        processed_text = text[:1000]  # But limit to 1000 characters max
-        
-    return processed_text
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def analyze_medical_report(request):
     """
     API endpoint to analyze medical report using Gemini AI
     OPTIMIZED: Added caching to avoid redundant processing
     """
-    if not request.user.is_authenticated:
-        return Response({
-            'success': False,
-            'error': 'Authentication required'
-        }, status=status.HTTP_401_UNAUTHORIZED)
-    
     # Check subscription limits
     subscription, created = Subscription.objects.get_or_create(user=request.user)
     
@@ -337,11 +211,11 @@ def analyze_medical_report(request):
         from django.utils import timezone
         from datetime import timedelta
         
-        # Look for existing analysis within last 24 hours for same language
+        # Look for existing analysis in the same language
         existing_analysis = AIAnalysis.objects.filter(
             report=report,
             language=language,
-            analyzed_at__gte=timezone.now() - timedelta(hours=24)
+            created_at__gte=timezone.now() - timedelta(hours=24)  # Cache for 24 hours
         ).first()
         
         if existing_analysis:
@@ -350,53 +224,29 @@ def analyze_medical_report(request):
             return Response({
                 'success': True,
                 'data': analysis_serializer.data,
-                'cached': True  # Indicate this is a cached result
+                'cached': True
             }, status=status.HTTP_200_OK)
         
-        # First decrypt the PDF
-        print(f"Decrypting PDF: {report.report_file.path}")
-        decrypted_content = report.decrypt_file()
-        
-        if not decrypted_content:
-            print(f"Failed to decrypt PDF: {report.report_file.path}")
+        # Extract text from report file
+        if not report.report_file or not os.path.exists(report.report_file.path):
             return Response({
                 'success': False,
-                'error': 'Could not decrypt the PDF file. The file might be corrupted or the encryption key is invalid.'
+                'error': 'Report file not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Process PDF with optimizations for 5-second limit
+        report_text = extract_text_from_pdf(report.report_file.path)
+        
+        if not report_text:
+            return Response({
+                'success': False,
+                'error': 'Could not extract text from report'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Save decrypted content to a temporary file for text extraction
-        import tempfile
-        import os
-        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_file:
-            tmp_file.write(decrypted_content)
-            tmp_file_path = tmp_file.name
+        # Preprocess text to optimize for AI analysis speed
+        processed_text = preprocess_medical_text(report_text)
         
-        try:
-            # Extract text from decrypted PDF
-            print(f"Attempting to extract text from decrypted PDF: {tmp_file_path}")
-            report_text = extract_text_from_pdf(tmp_file_path)
-            print(f"Text extraction result length: {len(report_text) if report_text else 0}")
-            
-            if not report_text:
-                print(f"Failed to extract text from decrypted PDF: {tmp_file_path}")
-                return Response({
-                    'success': False,
-                    'error': 'Could not extract text from PDF. The PDF might be scanned images, password-protected, or corrupted. Try uploading a different PDF file.'
-                }, status=status.HTTP_400_BAD_REQUEST)
-                
-            # Preprocess the text to identify key medical content
-            print("Preprocessing medical text to identify key sections")
-            processed_text = preprocess_medical_text(report_text)
-            print(f"Preprocessed text length: {len(processed_text)}")
-            
-            # Use preprocessed text for AI analysis
-            report_text = processed_text
-        finally:
-            # Clean up temporary file
-            if os.path.exists(tmp_file_path):
-                os.unlink(tmp_file_path)
-        
-        # Call Gemini AI service with timeout
+        # Process with Gemini AI using threading and timeout
         import concurrent.futures
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -448,16 +298,11 @@ def analyze_medical_report(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_subscription_status(request):
     """
     Get subscription status for authenticated user
     """
-    if not request.user.is_authenticated:
-        return Response({
-            'success': False,
-            'error': 'Authentication required'
-        }, status=status.HTTP_401_UNAUTHORIZED)
-    
     subscription, created = Subscription.objects.get_or_create(user=request.user)
     serializer = SubscriptionSerializer(subscription)
     
@@ -468,16 +313,11 @@ def get_subscription_status(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def upgrade_to_premium(request):
     """
     Upgrade user to premium subscription
     """
-    if not request.user.is_authenticated:
-        return Response({
-            'success': False,
-            'error': 'Authentication required'
-        }, status=status.HTTP_401_UNAUTHORIZED)
-    
     payment_id = request.data.get('payment_id')
     
     try:

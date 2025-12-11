@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/auth/register-patient/', views_secure.register_patient, name='register_patient'),
     path('api/auth/register-hospital/', views_secure.register_hospital_staff, name='register_hospital'),
     path('api/auth/logout/', views_secure.user_logout, name='user_logout'),
+    path('api/auth/refresh-token/', views_secure.refresh_token, name='refresh_token'),
     
     # Hospital Staff APIs (RBAC Protected)
     path('api/hospital/upload-report/', views_secure.hospital_upload_report, name='hospital_upload'),

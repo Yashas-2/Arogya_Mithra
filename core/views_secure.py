@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 from datetime import datetime
 from django.utils import timezone
 import os
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import (
     PatientProfile, MedicalReport, HospitalStaff, 
@@ -169,10 +170,13 @@ def patient_login(request):
     user = authenticate(username=username, password=password)
     
     if user and hasattr(user, 'patient_profile'):
-        login(request, user)
+        # Generate JWT token
+        refresh = RefreshToken.for_user(user)
         return Response({
             'success': True,
             'role': 'PATIENT',
+            'token': str(refresh.access_token),
+            'refresh': str(refresh),
             'user': {
                 'id': user.id,
                 'username': user.username,
@@ -202,10 +206,13 @@ def hospital_staff_login(request):
                 'error': 'Your account is pending verification by admin'
             }, status=status.HTTP_403_FORBIDDEN)
         
-        login(request, user)
+        # Generate JWT token
+        refresh = RefreshToken.for_user(user)
         return Response({
             'success': True,
             'role': 'HOSPITAL_STAFF',
+            'token': str(refresh.access_token),
+            'refresh': str(refresh),
             'user': {
                 'id': user.id,
                 'username': user.username,
@@ -225,6 +232,22 @@ def user_logout(request):
     """Logout endpoint for both roles"""
     logout(request)
     return Response({'success': True, 'message': 'Logged out successfully'})
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def refresh_token(request):
+    """Refresh JWT token"""
+    refresh_token = request.data.get('refresh')
+    if not refresh_token:
+        return Response({'success': False, 'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        refresh = RefreshToken(refresh_token)
+        access_token = str(refresh.access_token)
+        return Response({'success': True, 'token': access_token})
+    except Exception as e:
+        return Response({'success': False, 'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 # ============= HOSPITAL STAFF - REPORT UPLOAD =============
