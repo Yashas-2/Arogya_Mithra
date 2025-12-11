@@ -454,13 +454,11 @@ async function confirmPremiumUpgrade() {
                         <span style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 50px; font-size: 0.875rem;">✓ No Ads</span>
                         <span style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 50px; font-size: 0.875rem;">✓ Priority Support</span>
                     </div>
+                    <button onclick="goToReactHome()" class="btn btn-glow" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                        <i class="fas fa-home"></i> Back to React Home
+                    </button>
                 </div>
             `;
-            
-            // Redirect after 2 seconds
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 2000);
         } else {
             // Show error
             card.innerHTML = `
@@ -505,5 +503,9 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('.glass-card-premium').forEach(el => {
     observer.observe(el);
 });
+
+function goToReactHome() {
+    window.location.href = 'http://localhost:5173/';
+}
 </script>
 {% endblock %}

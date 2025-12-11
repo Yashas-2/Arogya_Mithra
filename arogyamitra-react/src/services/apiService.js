@@ -29,38 +29,18 @@ class ApiService {
       authToken = `Bearer ${authToken}`;
     }
     
-    // Set default headers
-    const defaultHeaders = {
-      'Content-Type': 'application/json',
-      ...(authToken && { 'Authorization': authToken })
-    };
-    
-    // Merge headers properly
     const config = {
       headers: {
-        ...defaultHeaders,
+        'Content-Type': 'application/json',
+        ...(authToken && { 'Authorization': authToken }),
         ...options.headers,
       },
       ...options,
     };
 
-    // If Content-Type is explicitly set to undefined, remove it to let browser set it
-    if (config.headers['Content-Type'] === undefined) {
-      delete config.headers['Content-Type'];
-    }
-
-    // Debug logging
-    console.log('Making API request to:', url);
-    console.log('Request config:', config);
-    console.log('Auth token:', authToken);
-
     try {
       const response = await fetch(url, config);
       const data = await response.json();
-      
-      // Debug logging
-      console.log('API response:', response);
-      console.log('Response data:', data);
       
       // Handle token expiration
       if (response.status === 401 && data.detail && data.detail.includes('token')) {
@@ -183,19 +163,14 @@ class ApiService {
       authToken = `Bearer ${authToken}`;
     }
     
-    console.log('Uploading medical report with auth token:', authToken);
-    
-    const result = await this.request('/api/hospital/upload-report/', {
+    return this.request('/api/hospital/upload-report/', {
       method: 'POST',
       body: formData,
       headers: {
         ...(authToken && { 'Authorization': authToken }),
-        'Content-Type': undefined, // Explicitly remove Content-Type to let browser set it
+        // Remove Content-Type to let browser set it with boundary for file uploads
       },
     });
-    
-    console.log('Upload result:', result);
-    return result;
   }
 
   async getMedicalReports() {

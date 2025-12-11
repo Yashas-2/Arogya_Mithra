@@ -46,19 +46,6 @@ const Home = () => {
     createParticles();
   }, [navigate, isAuthenticated, user]);
 
-  // Navigation handlers
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
-
-  const handleTryWithoutLoginClick = () => {
-    navigate('/scheme-checker');
-  };
-
-  const handleCheckNowClick = () => {
-    navigate('/scheme-checker');
-  };
-
   return (
     <>
       {/* Hero Section */}
@@ -77,12 +64,12 @@ const Home = () => {
           </p>
           
           <div className="hero-buttons">
-            <button onClick={handleLoginClick} className="btn btn-glow">
+            <a href="/login/" className="btn btn-glow">
               <i className="fas fa-sign-in-alt"></i> {t('loginSignup')}
-            </button>
-            <button onClick={handleTryWithoutLoginClick} className="btn btn-outline">
+            </a>
+            <a href="/scheme-checker/" className="btn btn-outline">
               <i className="fas fa-check-circle"></i> {t('tryWithoutLogin')}
-            </button>
+            </a>
           </div>
         </div>
         
@@ -107,9 +94,9 @@ const Home = () => {
             <p className="feature-description">
               {t('schemeCheckerDesc')}
             </p>
-            <button onClick={handleCheckNowClick} className="btn btn-primary mt-3" style={{ width: '100%' }}>
+            <a href="/scheme-checker/" className="btn btn-primary mt-3" style={{ width: '100%' }}>
               <span>{t('checkNow')}</span>
-            </button>
+            </a>
           </div>
           
           {/* Feature 2: Medical Vault */}
@@ -121,9 +108,9 @@ const Home = () => {
             <p className="feature-description">
               {t('medicalVaultDesc')}
             </p>
-            <button onClick={() => navigate('/report-vault')} className="btn btn-primary mt-3" style={{ width: '100%', background: 'var(--gradient-teal)' }}>
+            <a href="/report-vault/" className="btn btn-primary mt-3" style={{ width: '100%', background: 'var(--gradient-teal)' }}>
               <span>{t('uploadReports')}</span>
-            </button>
+            </a>
           </div>
           
           {/* Feature 3: AI Analysis */}
@@ -135,9 +122,9 @@ const Home = () => {
             <p className="feature-description">
               {t('aiInterpreterDesc')}
             </p>
-            <button onClick={() => navigate('/report-analysis')} className="btn btn-primary mt-3" style={{ width: '100%', background: 'var(--gradient-purple)' }}>
+            <a href="/report-analysis/" className="btn btn-primary mt-3" style={{ width: '100%', background: 'var(--gradient-purple)' }}>
               <span>{t('analyzeReport')}</span>
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -190,9 +177,9 @@ const Home = () => {
           <p style={{ color: 'var(--success-green)', marginBottom: '2rem' }}>
             <i className="fas fa-fire"></i> {t('revenueText')}
           </p>
-          <button onClick={() => navigate('/premium')} className="btn btn-glow" style={{ padding: '1.25rem 3rem', fontSize: '1.125rem' }}>
+          <a href="/premium/" className="btn btn-glow" style={{ padding: '1.25rem 3rem', fontSize: '1.125rem' }}>
             <i className="fas fa-crown"></i> <span>{t('upgradeToPremium')}</span>
-          </button>
+          </a>
         </div>
       </section>
 
